@@ -4,9 +4,11 @@
 #include <unistd.h>         // for close()
 #include <cstring> 
 #include <stdio.h>
+#include <arpa/inet.h>
+
 
 int main(){
-    int clientSocket = (AF_INET, SOCK_STREAM, 0);
+    int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
     sockaddr_in serverAddress;
     serverAddress.sin_family = AF_INET;
@@ -14,7 +16,14 @@ int main(){
     serverAddress.sin_addr.s_addr = INADDR_ANY;
 
     connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+    std::cout<<"Client connected \n";
 
-    const char* message = "Hello, server!";
-    send(clientSocket, message, strlen(message), 0);
+    while(true){
+        std::string message;
+        getline(std::cin, message);
+        send(clientSocket, message.c_str(), message.size(), 0);
+    }
+    
+    return 0;
+
 }

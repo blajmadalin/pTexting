@@ -14,21 +14,33 @@ int main(){
     serverAddress.sin_addr.s_addr = INADDR_ANY; //
 
     bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)); //binding socket to server adress
+    
     listen(serverSocket, 5); //starts listening on serverSocket.
     
     while(true){
         int clientSocket = accept(serverSocket, nullptr, nullptr);
-
-        if(clientSocket < 0){
-            perror("failed connection");
+        if(clientSocket < 1){
+            perror("failed to connect client \n");
             continue;
         }
 
-        char buffer[1024] = {0};
-        recv(clientSocket, buffer, sizeof(buffer), 0);
-        std::cout<<buffer;
+        std::cout<<"client connected \n";
 
-        close(clientSocket);
+        while(true){
+            char buffer[1024] = {0};
+            int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+
+            if(bytesReceived < 0){
+                perror("client disconnected");
+                close(clientSocket);
+                break;
+            }
+
+            std::cout<<"Client: " <<buffer << '\n';
+        }  
+
     }
+
+    return 0;
 
 }

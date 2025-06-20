@@ -1,29 +1,9 @@
 Project info gathering:
 
-a text messanger on a localyl run server where different people can connect (terminals) and 
-send texts to eachother.
-
-https - why?
-
-std::thread - for multiple threads to run at once (multiple users);
-
-bsd sockets?? (does it exist);
-
-Two sides: client side, server side
-
-client side:
- -connect to server
- -send messages
- -receive messages from server
-
-server side:
-  -send messages to clients
-  -
-
-
-  do server side: 
-    should listen on port (to check for connections right)
-    create run server
-    make connections available;
+-make server run at all times - done
+-make client run at all times after connection - done 
+-send messages from client to server -done
+-say who sent the message? (i would need identifier for connected clients?)
+-have multiple client at once on server.
 
     
