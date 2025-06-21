@@ -5,7 +5,7 @@ Project info gathering:
 -send messages from client to server -done
 -have multiple client at once on server. - done
 -clients should also receive message from server
--say who sent the message? (i would need identifier for connected clients?)
+-say who sent the message? (i would need identifier for connected clients?) - done
 
 
 

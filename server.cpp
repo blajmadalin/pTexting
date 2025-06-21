@@ -5,8 +5,11 @@
 #include <cstring> 
 #include <stdio.h>
 #include <thread>
+#include <atomic>
 
-void handleClient(int clientSocket){
+std::atomic<int> clientCount = 0;
+
+void handleClient(int clientSocket, int clientID){
 while(true){
             char buffer[1024] = {0};
             int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
@@ -17,7 +20,7 @@ while(true){
                 break;
             }
 
-            std::cout<<"Client: " <<buffer << '\n';
+            std::cout<< "Client" << clientID << ": " << buffer << '\n';
         }
 }
 
@@ -37,12 +40,12 @@ int main(){
         int clientSocket = accept(serverSocket, nullptr, nullptr);
 
         if(clientSocket < 1){
-            perror("failed to connect client \n");
+            perror("failed to connect Client \n");
             continue;
         }
-
-        std::cout<<"client connected \n";  
-        std::thread(handleClient, clientSocket).detach();
+        int clientID = clientCount.fetch_add(1);
+        std::cout<<"Client"<<clientID<<" connected \n";  
+        std::thread(handleClient, clientSocket, clientID).detach();
 
     }
 
