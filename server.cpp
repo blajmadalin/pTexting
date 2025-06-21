@@ -23,11 +23,12 @@ while(true){
                 close(clientSocket);
                 break;
             }
-            
+
             std::lock_guard<std::mutex> lock(clientSocketsMutex);
             for(int otherSocket : clientSockets){
                 if(otherSocket != clientSocket){
-                    send(otherSocket, buffer, sizeof(buffer), 0);
+                    std::string message ="Client" + std::to_string(clientID) + ": " + buffer;
+                    send(otherSocket, message.c_str(), message.size(), 0);
                 }
             }
             std::cout<< "Client" << clientID << ": " << buffer << '\n';
