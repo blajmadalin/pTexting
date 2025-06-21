@@ -5,7 +5,22 @@
 #include <cstring> 
 #include <stdio.h>
 #include <arpa/inet.h>
+#include <thread>
 
+void receiveMessages(int clientSocket){
+    while(true){
+    char buffer[1024] = {0};
+    int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+
+    if (bytesReceived > 0) {
+        std::cout << buffer << '\n';
+    }   
+    else {
+        std::cout << "Server closed connection or error\n";
+        break;
+    }
+    }
+}
 
 int main(){
     int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -17,6 +32,8 @@ int main(){
 
     connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
     std::cout<<"Client connected \n";
+
+    std::thread(receiveMessages, clientSocket).detach();
 
     while(true){
         std::string message;

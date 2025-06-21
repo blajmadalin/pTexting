@@ -6,8 +6,12 @@
 #include <stdio.h>
 #include <thread>
 #include <atomic>
+#include <vector>
+#include <mutex>
 
 std::atomic<int> clientCount = 0;
+std::vector<int> clientSockets;
+std::mutex clientSocketsMutex;
 
 void handleClient(int clientSocket, int clientID){
 while(true){
@@ -19,8 +23,15 @@ while(true){
                 close(clientSocket);
                 break;
             }
-
+            
+            std::lock_guard<std::mutex> lock(clientSocketsMutex);
+            for(int otherSocket : clientSockets){
+                if(otherSocket != clientSocket){
+                    send(otherSocket, buffer, sizeof(buffer), 0);
+                }
+            }
             std::cout<< "Client" << clientID << ": " << buffer << '\n';
+            
         }
 }
 
@@ -38,6 +49,9 @@ int main(){
     
     while(true){
         int clientSocket = accept(serverSocket, nullptr, nullptr);
+
+        std::lock_guard<std::mutex> lock(clientSocketsMutex);
+        clientSockets.push_back(clientSocket);
 
         if(clientSocket < 1){
             perror("failed to connect Client \n");
