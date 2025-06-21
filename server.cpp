@@ -4,6 +4,22 @@
 #include <unistd.h>         // for close()
 #include <cstring> 
 #include <stdio.h>
+#include <thread>
+
+void handleClient(int clientSocket){
+while(true){
+            char buffer[1024] = {0};
+            int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+
+            if(bytesReceived <= 0){
+                perror("client disconnected");
+                close(clientSocket);
+                break;
+            }
+
+            std::cout<<"Client: " <<buffer << '\n';
+        }
+}
 
 int main(){
     int serverSocket = socket(AF_INET, SOCK_STREAM, 0); //defining socket
@@ -19,25 +35,14 @@ int main(){
     
     while(true){
         int clientSocket = accept(serverSocket, nullptr, nullptr);
+
         if(clientSocket < 1){
             perror("failed to connect client \n");
             continue;
         }
 
-        std::cout<<"client connected \n";
-
-        while(true){
-            char buffer[1024] = {0};
-            int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
-
-            if(bytesReceived < 0){
-                perror("client disconnected");
-                close(clientSocket);
-                break;
-            }
-
-            std::cout<<"Client: " <<buffer << '\n';
-        }  
+        std::cout<<"client connected \n";  
+        std::thread(handleClient, clientSocket).detach();
 
     }
 
